@@ -6,9 +6,12 @@ import gql from 'graphql-tag';
 import { FETCH_POSTS_QUERY } from '../util/graphql';
 
 function PostForm() {
-  const { onSubmit, onChange, values } = useForm(createPostCallback, {
-    body: ''
-  });
+  const { onSubmit, onChange, values, setValues } = useForm(
+    createPostCallback,
+    {
+      body: ''
+    }
+  );
 
   const [createPost, { error }] = useMutation(CREATE_POST_MUTATION, {
     variables: values,
@@ -19,7 +22,7 @@ function PostForm() {
         query: FETCH_POSTS_QUERY,
         data: { getPosts: [result.data.createPost, ...data.getPosts] }
       });
-      values.body = '';
+      setValues({ ...values, body: '' });
     }
   });
 

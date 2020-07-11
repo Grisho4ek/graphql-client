@@ -4,24 +4,29 @@ import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import { FETCH_POSTS_QUERY } from '../util/graphql';
 
-const DeleteButton = ({ postId, callback }) => {
+const DeleteButton = ({ postId, commentId, callback }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-  const [deletePost] = useMutation(DELETE_POST, {
+  const [deleteObject] = useMutation(commentId ? DELETE_COMMENT : DELETE_POST, {
     variables: {
-      postId
+      postId,
+      commentId
     },
     onError() {},
     update(proxy) {
-      setConfirmOpen(false);
-      const data = proxy.readQuery({ query: FETCH_POSTS_QUERY });
-      proxy.writeQuery({
-        query: FETCH_POSTS_QUERY,
-        data: {
-          ...data,
-          getPosts: data.getPosts.filter(post => post.id !== postId)
-        }
-      });
+      if (!commentId) {
+        setConfirmOpen(false);
+        const data = proxy.readQuery({ query: FETCH_POSTS_QUERY });
+        proxy.writeQuery({
+          query: FETCH_POSTS_QUERY,
+          data: {
+            ...data,
+            getPosts: data.getPosts.filter(post => post.id !== postId)
+          }
+        });
+      }
+
+      console.log('object');
       callback && callback();
     }
   });
@@ -38,7 +43,7 @@ const DeleteButton = ({ postId, callback }) => {
       <Confirm
         open={confirmOpen}
         onCancel={() => setConfirmOpen(false)}
-        onConfirm={deletePost}
+        onConfirm={deleteObject}
       />
     </>
   );
@@ -47,6 +52,20 @@ const DeleteButton = ({ postId, callback }) => {
 const DELETE_POST = gql`
   mutation deletePost($postId: ID!) {
     deletePost(postId: $postId)
+  }
+`;
+const DELETE_COMMENT = gql`
+  mutation deleteComment($postId: ID!, $commentId: ID!) {
+    deleteComment(postId: $postId, commentId: $commentId) {
+      id
+      comments {
+        id
+        username
+        createdAt
+        body
+      }
+      commentCount
+    }
   }
 `;
 
