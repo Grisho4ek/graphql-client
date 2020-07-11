@@ -2,7 +2,17 @@ import React, { useContext, useState } from 'react';
 import gql from 'graphql-tag';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { Grid, Form } from 'semantic-ui-react';
-import { Card, Icon, Label, Image, Button, Input } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
+
+import {
+  Card,
+  Icon,
+  Label,
+  Image,
+  Button,
+  Input,
+  Popup
+} from 'semantic-ui-react';
 import moment from 'moment';
 import LikeButton from '../components/LikeButton';
 import { AuthContext } from '../context/auth';
@@ -77,19 +87,25 @@ const SinglePost = props => {
             <hr />
             <Card.Content extra>
               <LikeButton user={user} post={{ id, likes, likeCount }} />
-              <Button
-                basic
-                as='div'
-                labelPosition='right'
-                onClick={() => console.log('comment on post')}
-              >
-                <Button color='blue' basic>
-                  <Icon name='comments' />
-                </Button>
-                <Label basic color='blue' pointing='left'>
-                  {commentCount}
-                </Label>
-              </Button>
+              <Popup
+                inverted
+                content='Comment on post'
+                trigger={
+                  <Button
+                    basic
+                    as={!user ? Link : 'div'}
+                    labelPosition='right'
+                    to={!user ? '/login' : undefined}
+                  >
+                    <Button color='blue' basic>
+                      <Icon name='comments' />
+                    </Button>
+                    <Label basic color='blue' pointing='left'>
+                      {commentCount}
+                    </Label>
+                  </Button>
+                }
+              />
               {user && user.username === username && (
                 <DeleteButton postId={id} callback={deletePost} />
               )}
