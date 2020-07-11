@@ -10,7 +10,7 @@ const MenuBar = () => {
     <Menu pointing secondary size='massive' color='teal'>
       <Menu.Item name={user.username} as={NavLink} to='/' exact />
       <Menu.Menu position='right'>
-        <Menu.Item name='logout' as={Link} to='/' exact onClick={logout} />
+        <Menu.Item name='logout' as={Link} to='/' onClick={logout} />
       </Menu.Menu>
     </Menu>
   ) : (
